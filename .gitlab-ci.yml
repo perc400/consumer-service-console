@@ -1,0 +1,31 @@
+stages:
+    - build
+    - test
+
+variables:
+    IMAGE_NAME: consumer_service
+    DOCKER_DRIVER: overlay2
+    IMAGE_TAG: $CI_COMMIT_SHA
+
+build image:
+    tags:
+        - building
+    stage: build
+    cache:
+        paths:
+            - .docker/cache
+    script:
+        - docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -t ${IMAGE_NAME}:latest .
+        - docker image prune -f
+    when: manual
+    allow_failure: false
+
+test run:
+    tags:
+        - testing
+    stage: test
+    needs:
+        - build image
+    script:
+        - docker run --rm -d --name consumer_service consumer_service
+    allow_failure: false
