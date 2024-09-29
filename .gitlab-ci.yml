@@ -1,11 +1,15 @@
 stages:
     - build
+    - push
     - test
 
 variables:
     IMAGE_NAME: consumer_service
     DOCKER_DRIVER: overlay2
     IMAGE_TAG: $CI_COMMIT_SHA
+    REGISTRY: 192.168.140.136:5000
+    REGISTRY_USER: admin
+    REGISTRY_PASSWORD: admin
 
 build image:
     tags:
@@ -20,12 +24,26 @@ build image:
     when: manual
     allow_failure: false
 
+push image:
+    tags:
+        - pushing
+    stage: push
+    needs:
+        - build image
+    script:
+        - echo "$REGISTRY_PASSWORD" | docker login $REGISTRY -u "$REGISTRY_USER" --password-stdin
+        - docker tag ${IMAGE_NAME}:${IMAGE_TAG} $REGISTRY/${IMAGE_NAME}:${IMAGE_TAG}
+        - docker tag ${IMAGE_NAME}:latest $REGISTRY/${IMAGE_NAME}:latest
+        - docker push $REGISTRY/${IMAGE_NAME}:${IMAGE_TAG}
+        - docker push $REGISTRY/${IMAGE_NAME}:latest
+    allow_failure: false
+
 test run:
     tags:
         - testing
     stage: test
     needs:
-        - build image
+        - push image
     script:
-        - docker run --rm -d --name consumer_service consumer_service
+        - docker run --rm -d --name ${IMAGE_NAME} $REGISTRY/${IMAGE_NAME}:${IMAGE_TAG}
     allow_failure: false
