@@ -44,5 +44,6 @@ test run:
     needs:
         - push image
     script:
+        - echo "$REGISTRY_PASSWORD" | docker login $REGISTRY -u "$REGISTRY_USER" --password-stdin
         - docker run --rm -d --name ${IMAGE_NAME} $REGISTRY/${IMAGE_NAME}:${IMAGE_TAG}
     allow_failure: false
