@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -6,7 +7,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        string _hostname = "192.168.140.137";
+        string _hostname = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
         string _queueName = "user-queue";
 
         var connectionFactory = new ConnectionFactory() {
