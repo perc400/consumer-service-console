@@ -10,6 +10,8 @@ public class Program
         string _hostname = Environment.GetEnvironmentVariable("RABBITMQ_HOST") ?? "localhost";
         string _queueName = "user-queue";
 
+        Console.WriteLine($"Connecting to RabbitMQ host: {_hostname}");
+
         var connectionFactory = new ConnectionFactory() {
             HostName = _hostname
         };
