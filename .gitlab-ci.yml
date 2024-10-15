@@ -45,5 +45,5 @@ test run:
         - push image
     script:
         - echo "$REGISTRY_PASSWORD" | docker login $REGISTRY -u "$REGISTRY_USER" --password-stdin
-        - docker run --rm -d --name ${IMAGE_NAME} $REGISTRY/${IMAGE_NAME}:${IMAGE_TAG}
+        - docker run --rm -d --network apps_network --name ${IMAGE_NAME} -e RABBITMQ_HOST="rabbitmq" $REGISTRY/${IMAGE_NAME}:${IMAGE_TAG}
     allow_failure: false
